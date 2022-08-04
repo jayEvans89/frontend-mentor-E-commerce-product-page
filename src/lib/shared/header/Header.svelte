@@ -1,7 +1,7 @@
 <script lang="ts">
   import logo from "../../../assets/logo.svg";
   import Navbar from "./nav/Navbar.svelte";
-  import Basket from '@/lib/shared/basket/Basket.svelte'
+  import MiniCart from '@/lib/shared/mini-cart/MiniCart.svelte'
   import avatar from '@/assets/avatar.png'
 
   let navOpen = false;
@@ -24,7 +24,7 @@
 
   <Navbar bind:navOpen />
 
-  <Basket/>
+  <MiniCart/>
 
   <div class="profile-logo__container">
     <img class="profile-logo__logo" src="{avatar}" alt="Avatar">
@@ -43,7 +43,7 @@
 
     @media (min-width: 1024px) {
       height: 140px;
-      border-bottom: 1px solid var(--cadet-blue);
+      border-bottom: 1px solid var(--gainsboro);
     }
   }
 
