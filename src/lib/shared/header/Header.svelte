@@ -2,6 +2,7 @@
   import logo from "../../../assets/logo.svg";
   import Navbar from "./nav/Navbar.svelte";
   import Basket from '@/lib/shared/basket/Basket.svelte'
+  import avatar from '@/assets/avatar.png'
 
   let navOpen = false;
 
@@ -18,10 +19,16 @@
       fill-rule="evenodd"
     /></svg
   >
+
   <img src={logo} alt="logo" />
+
   <Navbar bind:navOpen />
 
   <Basket/>
+
+  <div class="profile-logo__container">
+    <img class="profile-logo__logo" src="{avatar}" alt="Avatar">
+  </div>
 </header>
 
 <style lang="scss">
@@ -30,7 +37,7 @@
     background: var(--white);
     display: flex;
     align-items: center;
-    gap: 20px;
+    gap: 50px;
     padding: 0 20px;
     position: relative;
 
@@ -43,6 +50,26 @@
   .hamburger {
     @media (min-width: 1024px) {
       display: none;
+    }
+  }
+
+  .profile-logo {
+    &__container {
+      width: 72px;
+      height: 72px;
+      cursor: pointer;
+      transition: 250ms ease-in-out;
+      border-radius: 50%;
+      border: 2px solid transparent;
+
+      &:hover {
+        border-color: var(--heat-wave);
+      }
+    }
+
+    &__logo {
+      // width: 50px;
+      // height: 50px;
     }
   }
 </style>
