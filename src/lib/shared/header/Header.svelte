@@ -37,12 +37,13 @@
     background: var(--white);
     display: flex;
     align-items: center;
-    gap: 50px;
+    gap: 15px;
     padding: 0 20px;
     position: relative;
 
     @media (min-width: 1024px) {
       height: 140px;
+      gap: 50px;
       border-bottom: 1px solid var(--gainsboro);
     }
   }
@@ -55,12 +56,17 @@
 
   .profile-logo {
     &__container {
-      width: 72px;
-      height: 72px;
+      width: 42px;
+      height: 42px;
       cursor: pointer;
       transition: 250ms ease-in-out;
       border-radius: 50%;
       border: 2px solid transparent;
+
+      @media (min-width: 1024px) {
+        width: 72px;
+      height: 72px;
+      }
 
       &:hover {
         border-color: var(--heat-wave);
