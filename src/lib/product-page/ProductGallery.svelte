@@ -2,8 +2,9 @@
   import { onMount } from "svelte";
 
   export let images: string[];
+  export let thumbnails: string[];
 
-  let activeIndex = 0;
+  let activeIndex = 0
   let container;
   let elements;
   let snapType = "none";
@@ -56,6 +57,13 @@
       behavior: "smooth",
     });
   }
+
+  function goToImage(index: number) {
+    activeIndex = index;
+    elements[index].scrollIntoView({
+      behavior: "smooth",
+    });
+  }
 </script>
 
 <section class="product-gallery">
@@ -69,7 +77,10 @@
       />
     {/each}
   </div>
-  <span class="product-gallery__nav-icon product-gallery__nav-icon--previous" on:click={goPrevious}>
+  <span
+    class="product-gallery__nav-icon product-gallery__nav-icon--previous"
+    on:click={goPrevious}
+  >
     <svg width="12" height="18" xmlns="http://www.w3.org/2000/svg"
       ><path
         d="M11 1 3 9l8 8"
@@ -80,7 +91,10 @@
       /></svg
     >
   </span>
-  <span class="product-gallery__nav-icon product-gallery__nav-icon--next" on:click={goNext}>
+  <span
+    class="product-gallery__nav-icon product-gallery__nav-icon--next"
+    on:click={goNext}
+  >
     <svg width="13" height="18" xmlns="http://www.w3.org/2000/svg"
       ><path
         d="m2 1 8 8-8 8"
@@ -91,6 +105,26 @@
       /></svg
     ></span
   >
+
+  <section class="thumbnail-gallery">
+    {#each thumbnails as image, index}
+      <div
+        on:click={() => goToImage(index)}
+        class="thumbnail-gallery__image-container {index === activeIndex
+          ? 'thumbnail-gallery__image-container--active'
+          : ''}"
+      >
+        {#if index === activeIndex}
+          <span class="thumbnail-gallery__overlay" />
+        {/if}
+        <img
+          class="thumbnail-gallery__image"
+          src={`./product-images/${image}`}
+          alt="Thumbnail Gallery"
+        />
+      </div>
+    {/each}
+  </section>
 </section>
 
 <style lang="scss">
@@ -101,6 +135,10 @@
       display: flex;
       overflow-x: scroll;
       scroll-snap-type: x mandatory;
+
+      @media (min-width: 1024px) {
+        border-radius: 20px;
+      }
     }
 
     &__nav-icon {
@@ -115,6 +153,10 @@
       width: 40px;
       height: 40px;
 
+      @media (min-width: 1024px) {
+        display: none;
+      }
+
       &--previous {
         left: 15px;
       }
@@ -122,6 +164,40 @@
       &--next {
         right: 15px;
       }
+    }
+  }
+
+  .thumbnail-gallery {
+    display: none;
+    gap: 15px;
+    margin-top: 30px;
+
+    @media (min-width: 1024px) {
+      display: flex;
+    }
+
+    &__image-container {
+      border-radius: 15px;
+      width: 148px;
+      height: 148px;
+      overflow: hidden;
+      border: 3px solid transparent;
+      position: relative;
+      cursor: pointer;
+
+      &--active {
+        border-color: var(--heat-wave);
+      }
+    }
+
+    &__overlay {
+      background: rgba(255, 255, 255, 0.7);
+      height: 100%;
+      width: 100%;
+      display: block;
+      position: absolute;
+      left: 0;
+      top: 0;
     }
   }
 </style>

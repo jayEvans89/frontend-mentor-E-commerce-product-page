@@ -15,7 +15,7 @@
 
 <article class="product-page">
   <div class="product-page__gallery">
-    <ProductGallery bind:images="{product.images}"/>
+    <ProductGallery bind:images="{product.images}" bind:thumbnails="{product.thumbnails}"/>
   </div>
   <div class="product-page__product product">
     <p class="product__brand">{product.brand}</p>
@@ -84,8 +84,9 @@
     gap: 15px;
 
     @media (min-width: 1024px) {
-      gap: 30px;
+      gap: 70px;
       flex-direction: row;
+      padding-top: 80px;
     }
 
     &__gallery {
@@ -98,6 +99,10 @@
   }
   .product {
     padding: 0 20px 20px;
+
+    @media (min-width: 1024px) {
+      margin: 80px 0 0;
+    }
 
     &__brand {
       text-transform: uppercase;
@@ -112,6 +117,11 @@
       font-size: 30px;
       line-height: 35px;
       margin-bottom: 15px;
+
+      @media (min-width: 1024px) {
+        font-size: 50px;
+        line-height: 55px;
+      }
     }
 
     &__description {
@@ -135,6 +145,11 @@
   .product-price-row {
     display: flex;
     align-items: center;
+
+    @media (min-width: 1024px) {
+      flex-direction: column;
+      align-items: flex-start;
+    }
 
     &__current-price-section {
       display: flex;
