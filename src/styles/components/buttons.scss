@@ -16,6 +16,7 @@
   &--primary {
     background: var(--heat-wave);
     color: var(--white);
+    box-shadow: 0 10px 40px -6px var(--heat-wave);
 
     &:hover {
       opacity: 0.7;

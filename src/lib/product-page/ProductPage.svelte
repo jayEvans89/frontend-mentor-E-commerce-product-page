@@ -81,9 +81,10 @@
   .product-page {
     display: flex;
     flex-direction: column;
-    gap: 30px;
+    gap: 15px;
 
     @media (min-width: 1024px) {
+      gap: 30px;
       flex-direction: row;
     }
 
@@ -96,7 +97,7 @@
     }
   }
   .product {
-    padding: 20px;
+    padding: 0 20px 20px;
 
     &__brand {
       text-transform: uppercase;

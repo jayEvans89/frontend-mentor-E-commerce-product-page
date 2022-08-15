@@ -69,16 +69,59 @@
       />
     {/each}
   </div>
-  <p on:click={goPrevious}>Previous</p>
-  <p on:click={goNext}>Next</p>
+  <span class="product-gallery__nav-icon product-gallery__nav-icon--previous" on:click={goPrevious}>
+    <svg width="12" height="18" xmlns="http://www.w3.org/2000/svg"
+      ><path
+        d="M11 1 3 9l8 8"
+        stroke="#1D2026"
+        stroke-width="3"
+        fill="none"
+        fill-rule="evenodd"
+      /></svg
+    >
+  </span>
+  <span class="product-gallery__nav-icon product-gallery__nav-icon--next" on:click={goNext}>
+    <svg width="13" height="18" xmlns="http://www.w3.org/2000/svg"
+      ><path
+        d="m2 1 8 8-8 8"
+        stroke="#1D2026"
+        stroke-width="3"
+        fill="none"
+        fill-rule="evenodd"
+      /></svg
+    ></span
+  >
 </section>
 
 <style lang="scss">
   .product-gallery {
+    position: relative;
+
     &__main-carousel {
       display: flex;
       overflow-x: scroll;
       scroll-snap-type: x mandatory;
+    }
+
+    &__nav-icon {
+      background: var(--white);
+      position: absolute;
+      top: 50%;
+      transform: translateY(-50%);
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      width: 40px;
+      height: 40px;
+
+      &--previous {
+        left: 15px;
+      }
+
+      &--next {
+        right: 15px;
+      }
     }
   }
 </style>
