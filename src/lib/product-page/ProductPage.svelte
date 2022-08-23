@@ -1,9 +1,8 @@
 <script lang="ts">
   import Sneakers from "@/data/product.json";
   import type { Product } from "@/types/product";
-  import cartIcon from "@/assets/icons/icon-cart.svg";
-  import ProductGallery from '@/lib/product-page/ProductGallery.svelte';
-  import { cartStore } from '../shared/CartStore';
+  import ProductGallery from "@/lib/product-page/ProductGallery.svelte";
+  import { cartStore } from "../shared/CartStore";
 
   const product: Product = Sneakers;
   const productPrice = product.salePercentage
@@ -14,23 +13,27 @@
   let productQuantity = 0;
 
   function increaseQuantity() {
-    productQuantity++
+    productQuantity++;
   }
 
   function decreaseQuantity() {
     if (productQuantity > 0) {
-      productQuantity--
+      productQuantity--;
     }
   }
 
   function addToCart() {
-    cartStore.addToCart(product, productQuantity)
+    cartStore.addToCart(product, productQuantity);
+    productQuantity = 0;
   }
 </script>
 
 <article class="product-page">
   <div class="product-page__gallery">
-    <ProductGallery bind:images="{product.images}" bind:thumbnails="{product.thumbnails}"/>
+    <ProductGallery
+      bind:images={product.images}
+      bind:thumbnails={product.thumbnails}
+    />
   </div>
   <div class="product-page__product product">
     <p class="product__brand">{product.brand}</p>
@@ -205,6 +208,7 @@
     background: var(--ghost-white);
     border-radius: 8px;
     padding: 20px;
+    user-select: none;
 
     @media (min-width: 1024px) {
       flex: 1 1 40%;

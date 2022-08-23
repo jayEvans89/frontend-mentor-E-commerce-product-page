@@ -1,8 +1,10 @@
 <script lang="ts">
   import { fade } from "svelte/transition";
   import { cartStore, type cartItem } from "@/lib/shared/CartStore";
+  import iconDelete from "@/assets/icons/icon-delete.svg";
+  import type { Product } from "@/types/product";
 
-  let showBasket = true;
+  let showBasket = false;
   let leaveTimeout;
   let totalItems;
   let basketItems: cartItem[];
@@ -22,9 +24,9 @@
   }
 
   function hideBasket() {
-    // leaveTimeout = setTimeout(() => {
-    //   showBasket = false;
-    // }, 200);
+    leaveTimeout = setTimeout(() => {
+      showBasket = false;
+    }, 200);
   }
 
   function toggleBasket() {
@@ -38,11 +40,15 @@
 
     return (price / 100) * salePercentage;
   }
+
+  function removeItem(item: Product) {
+    cartStore.removeFromCart(item);
+  }
 </script>
 
 <div class="mini-cart-container">
   {#if totalItems > 0}
-    <span>{totalItems}</span>
+    <span class="mini-cart__total-items-badge">{totalItems}</span>
   {/if}
   <svg
     on:mouseenter={basketHover}
@@ -67,7 +73,11 @@
       <header class="mini-cart__header">
         <h2 class="mini-cart__title">Cart</h2>
       </header>
-      <div class="mini-cart__body {totalItems > 0 ? 'mini-cart__body--active' : 'mini-cart__body'}">
+      <div
+        class="mini-cart__body {totalItems > 0
+          ? 'mini-cart__body--active'
+          : 'mini-cart__body'}"
+      >
         {#if totalItems === 0}
           <div class="mini-cart__empty-message-container">
             <p class="mini-cart__empty-message">Your cart is empty.</p>
@@ -88,13 +98,20 @@
                     product.item.salePercentage
                   ).toFixed(2)} x {product.quantity}
                   <strong class="mini-cart-item__total-price">
-                    ${(getSalePrice(
-                      product.item.price,
-                      product.item.salePercentage
-                    ) * product.quantity).toFixed(2)}
+                    ${(
+                      getSalePrice(
+                        product.item.price,
+                        product.item.salePercentage
+                      ) * product.quantity
+                    ).toFixed(2)}
                   </strong>
                 </p>
               </div>
+              <img
+                on:click={removeItem(product.item)}
+                src={iconDelete}
+                alt="Delete item from basket"
+              />
             </div>
           {/each}
           <button class="btn btn--primary btn--no-shadow">Checkout</button>
@@ -139,6 +156,18 @@
       top: 60px;
       left: 50%;
       transform: translateX(-50%);
+    }
+
+    &__total-items-badge {
+      position: absolute;
+      top: -8px;
+      right: -9px;
+      background: var(--heat-wave);
+      color: var(--white);
+      font-size: 10px;
+      border-radius: 9px;
+      display: block;
+      padding: 0 8px;
     }
 
     &__header {
@@ -191,6 +220,10 @@
     &__title,
     &__price-info {
       color: var(--dark-electric-blue);
+    }
+
+    &__info {
+      flex-grow: 1;
     }
 
     &__total-price {
