@@ -1,7 +1,20 @@
 <script lang="ts">
   import { fade } from "svelte/transition";
-  let showBasket = false;
+  import { cartStore, type cartItem } from "@/lib/shared/CartStore";
+
+  let showBasket = true;
   let leaveTimeout;
+  let totalItems;
+  let basketItems: cartItem[];
+
+  cartStore.subscribe((items) => {
+    basketItems = items;
+    let count = 0;
+    items.forEach((item) => {
+      count += item.quantity;
+    });
+    totalItems = count;
+  });
 
   function basketHover() {
     clearTimeout(leaveTimeout);
@@ -9,21 +22,32 @@
   }
 
   function hideBasket() {
-    leaveTimeout = setTimeout(() => {
-      showBasket = false;
-    }, 200);
+    // leaveTimeout = setTimeout(() => {
+    //   showBasket = false;
+    // }, 200);
   }
 
   function toggleBasket() {
-    showBasket = !showBasket
+    showBasket = !showBasket;
+  }
+
+  function getSalePrice(price: number, salePercentage: number | null) {
+    if (salePercentage === null) {
+      return price;
+    }
+
+    return (price / 100) * salePercentage;
   }
 </script>
 
 <div class="mini-cart-container">
+  {#if totalItems > 0}
+    <span>{totalItems}</span>
+  {/if}
   <svg
     on:mouseenter={basketHover}
     on:mouseleave={hideBasket}
-    on:touchstart="{toggleBasket}"
+    on:touchstart={toggleBasket}
     class="basket-icon"
     width="22"
     height="20"
@@ -43,10 +67,38 @@
       <header class="mini-cart__header">
         <h2 class="mini-cart__title">Cart</h2>
       </header>
-      <div class="mini-cart__body">
-        <div class="mini-cart__empty-message-container">
-          <p class="mini-cart__empty-message">Your cart is empty.</p>
-        </div>
+      <div class="mini-cart__body {totalItems > 0 ? 'mini-cart__body--active' : 'mini-cart__body'}">
+        {#if totalItems === 0}
+          <div class="mini-cart__empty-message-container">
+            <p class="mini-cart__empty-message">Your cart is empty.</p>
+          </div>
+        {:else}
+          {#each basketItems as product}
+            <div class="mini-cart-item">
+              <img
+                class="mini-cart-item__thumbnail"
+                src={`./product-images/${product.item.thumbnails[0]}`}
+                alt="Product thumbnail"
+              />
+              <div class="mini-cart-item__info">
+                <p class="mini-cart-item__title">{product.item.title}</p>
+                <p class="mini-cart-item__price-info">
+                  ${getSalePrice(
+                    product.item.price,
+                    product.item.salePercentage
+                  ).toFixed(2)} x {product.quantity}
+                  <strong class="mini-cart-item__total-price">
+                    ${(getSalePrice(
+                      product.item.price,
+                      product.item.salePercentage
+                    ) * product.quantity).toFixed(2)}
+                  </strong>
+                </p>
+              </div>
+            </div>
+          {/each}
+          <button class="btn btn--primary btn--no-shadow">Checkout</button>
+        {/if}
       </div>
     </section>
   {/if}
@@ -103,6 +155,13 @@
 
     &__body {
       height: 200px;
+      padding: 20px;
+
+      &--active {
+        display: flex;
+        flex-direction: column;
+        justify-content: space-between;
+      }
     }
 
     &__empty-message-container {
@@ -115,6 +174,27 @@
     &__empty-message {
       font-weight: 700;
       color: var(--dark-electric-blue);
+    }
+  }
+
+  .mini-cart-item {
+    display: flex;
+    gap: 15px;
+    align-items: center;
+
+    &__thumbnail {
+      width: 60px;
+      height: 60px;
+      border-radius: 5px;
+    }
+
+    &__title,
+    &__price-info {
+      color: var(--dark-electric-blue);
+    }
+
+    &__total-price {
+      color: var(--black);
     }
   }
 </style>

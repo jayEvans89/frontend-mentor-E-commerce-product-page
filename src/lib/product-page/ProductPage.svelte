@@ -3,6 +3,7 @@
   import type { Product } from "@/types/product";
   import cartIcon from "@/assets/icons/icon-cart.svg";
   import ProductGallery from '@/lib/product-page/ProductGallery.svelte';
+  import { cartStore } from '../shared/CartStore';
 
   const product: Product = Sneakers;
   const productPrice = product.salePercentage
@@ -20,6 +21,10 @@
     if (productQuantity > 0) {
       productQuantity--
     }
+  }
+
+  function addToCart() {
+    cartStore.addToCart(product, productQuantity)
   }
 </script>
 
@@ -73,7 +78,7 @@
           /></svg
         >
       </div>
-      <button class="btn btn--primary">
+      <button class="btn btn--primary" on:click={addToCart}>
         <span class="btn__icon-container">
           <svg width="22" height="20" xmlns="http://www.w3.org/2000/svg"
             ><path
