@@ -60,6 +60,7 @@
       height: 100%;
       padding-top: 0;
       padding-bottom: 0;
+      z-index: auto;
     }
 
     &--open {

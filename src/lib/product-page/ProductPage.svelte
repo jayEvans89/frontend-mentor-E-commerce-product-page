@@ -11,6 +11,16 @@
   const onSale = product.salePercentage !== null;
 
   let productQuantity = 0;
+
+  function increaseQuantity() {
+    productQuantity++
+  }
+
+  function decreaseQuantity() {
+    if (productQuantity > 0) {
+      productQuantity--
+    }
+  }
 </script>
 
 <article class="product-page">
@@ -38,6 +48,7 @@
     <footer class="product__footer">
       <div class="quantity-selector">
         <svg
+          on:click={decreaseQuantity}
           class="quantity-selector__icon quantity-selector__icon--minus"
           width="12"
           height="4"
@@ -50,6 +61,7 @@
         >
         <span class="quantity-selector__quantity">{productQuantity}</span>
         <svg
+          on:click={increaseQuantity}
           class="quantity-selector__icon quantity-selector__icon--plus"
           width="12"
           height="12"

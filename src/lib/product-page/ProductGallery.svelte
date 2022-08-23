@@ -1,17 +1,23 @@
 <script lang="ts">
   import { onMount } from "svelte";
+  import { fade } from "svelte/transition";
+  import Lightbox from "./Lightbox.svelte";
 
   export let images: string[];
   export let thumbnails: string[];
+  export let lightbox = false;
+  export let carouselId = "mainCarousel";
 
-  let activeIndex = 0
+  let activeIndex = 0;
   let container;
   let elements;
   let snapType = "none";
+  let imageClick = false;
+  let showLightbox = false;
 
   onMount(() => {
-    container = document.querySelector("#mainCarousel");
-    elements = [...document.querySelectorAll("#mainCarousel img")];
+    container = document.querySelector(`#${carouselId}`);
+    elements = [...document.querySelectorAll(`#${carouselId} img`)];
 
     const observer = new IntersectionObserver(handleIntersect, {
       root: container,
@@ -21,7 +27,6 @@
 
     elements.forEach((el) => {
       observer.observe(el);
-      console.log(el.src);
     });
 
     setTimeout(() => {
@@ -31,7 +36,7 @@
 
   function handleIntersect(entries) {
     const entry = entries.find((e) => e.isIntersecting);
-    if (entry) {
+    if (entry && !imageClick) {
       const index = elements.findIndex((e) => e === entry.target);
       activeIndex = index;
     }
@@ -59,54 +64,77 @@
   }
 
   function goToImage(index: number) {
+    imageClick = true;
     activeIndex = index;
     elements[index].scrollIntoView({
       behavior: "smooth",
     });
+
+    setTimeout(() => {
+      imageClick = false;
+    }, 500);
+  }
+
+  function toggleLightbox() {
+    const windowWidth = window.innerWidth
+    if (windowWidth >= 1024) {
+      showLightbox = true
+    }
+  }
+
+  function closeLightbox() {
+    showLightbox = false;
   }
 </script>
 
-<section class="product-gallery">
-  <div class="product-gallery__main-carousel" id="mainCarousel">
-    {#each images as image}
-      <img
-        class="product-gallery__image"
-        src={`./product-images/${image}`}
-        alt="Gallery"
-        style="scroll-snap-align: {snapType}"
-      />
-    {/each}
-  </div>
-  <span
-    class="product-gallery__nav-icon product-gallery__nav-icon--previous"
-    on:click={goPrevious}
-  >
-    <svg width="12" height="18" xmlns="http://www.w3.org/2000/svg"
-      ><path
-        d="M11 1 3 9l8 8"
-        stroke="#1D2026"
-        stroke-width="3"
-        fill="none"
-        fill-rule="evenodd"
-      /></svg
+<section class="product-gallery {lightbox ? 'product-gallery--light-box' : ''}">
+  <div class="product-gallery__main-carousel">
+    <div class="product-gallery__image-container" id={carouselId}>
+      {#each images as image}
+        <img
+          on:click={toggleLightbox}
+          class="product-gallery__image"
+          src={`./product-images/${image}`}
+          alt="Gallery"
+          style="scroll-snap-align: {snapType}"
+        />
+      {/each}
+    </div>
+    <span
+      class="product-gallery__nav-icon product-gallery__nav-icon--previous {lightbox
+        ? 'product-gallery__nav-icon--lightbox product-gallery__nav-icon--previous-lightbox'
+        : ''}"
+      on:click={goPrevious}
     >
-  </span>
-  <span
-    class="product-gallery__nav-icon product-gallery__nav-icon--next"
-    on:click={goNext}
-  >
-    <svg width="13" height="18" xmlns="http://www.w3.org/2000/svg"
-      ><path
-        d="m2 1 8 8-8 8"
-        stroke="#1D2026"
-        stroke-width="3"
-        fill="none"
-        fill-rule="evenodd"
-      /></svg
-    ></span
-  >
+      <svg viewBox="0 0 12 18" xmlns="http://www.w3.org/2000/svg"
+        ><path
+          d="M11 1 3 9l8 8"
+          stroke-width="3"
+          fill="none"
+          fill-rule="evenodd"
+        /></svg
+      >
+    </span>
+    <span
+      class="product-gallery__nav-icon product-gallery__nav-icon--next {lightbox
+        ? 'product-gallery__nav-icon--lightbox product-gallery__nav-icon--next-lightbox'
+        : ''}"
+      on:click={goNext}
+    >
+      <svg viewBox="0 0 12 18" xmlns="http://www.w3.org/2000/svg"
+        ><path
+          d="m2 1 8 8-8 8"
+          stroke-width="3"
+          fill="none"
+          fill-rule="evenodd"
+        /></svg
+      ></span
+    >
+  </div>
 
-  <section class="thumbnail-gallery">
+  <section
+    class="thumbnail-gallery {lightbox ? 'thumbnail-gallery--center' : ''}"
+  >
     {#each thumbnails as image, index}
       <div
         on:click={() => goToImage(index)}
@@ -114,31 +142,48 @@
           ? 'thumbnail-gallery__image-container--active'
           : ''}"
       >
-        {#if index === activeIndex}
-          <span class="thumbnail-gallery__overlay" />
-        {/if}
-        <img
-          class="thumbnail-gallery__image"
-          src={`./product-images/${image}`}
-          alt="Thumbnail Gallery"
-        />
+      <img
+      class="thumbnail-gallery__image"
+      src={`./product-images/${image}`}
+      alt="Thumbnail Gallery"
+      />
+      <span class="thumbnail-gallery__overlay {index === activeIndex ? 'thumbnail-gallery__overlay--active' : ''}" />
       </div>
     {/each}
   </section>
+  {#if showLightbox}
+    <div transition:fade>
+      <Lightbox {images} {thumbnails} on:closeLightbox={closeLightbox} />
+    </div>
+  {/if}
 </section>
 
 <style lang="scss">
   .product-gallery {
     position: relative;
 
+    &--light-box {
+      // position: fixed;
+      width: 800px;
+    }
+
     &__main-carousel {
-      display: flex;
+      position: relative;
+    }
+
+    &__image-container {
       overflow-x: scroll;
       scroll-snap-type: x mandatory;
+      position: relative;
+      display: flex;
 
       @media (min-width: 1024px) {
         border-radius: 20px;
       }
+    }
+
+    &__image {
+      cursor: pointer;
     }
 
     &__nav-icon {
@@ -153,8 +198,29 @@
       width: 40px;
       height: 40px;
 
+      svg {
+        height: 18px;
+        stroke: #1d2026;
+      }
+
       @media (min-width: 1024px) {
         display: none;
+      }
+
+      &--lightbox {
+        display: flex;
+        width: 80px;
+        height: 80px;
+
+        svg {
+          height: 28px;
+          transition: 250ms ease-in-out;
+          cursor: pointer;
+
+          &:hover {
+            stroke: var(--heat-wave);
+          }
+        }
       }
 
       &--previous {
@@ -163,6 +229,14 @@
 
       &--next {
         right: 15px;
+      }
+
+      &--previous-lightbox {
+        left: -40px;
+      }
+
+      &--next-lightbox {
+        right: -40px;
       }
     }
   }
@@ -174,6 +248,10 @@
 
     @media (min-width: 1024px) {
       display: flex;
+    }
+
+    &--center {
+      justify-content: center;
     }
 
     &__image-container {
@@ -188,6 +266,12 @@
       &--active {
         border-color: var(--heat-wave);
       }
+
+      &:hover {
+        .thumbnail-gallery__overlay {
+          opacity: 1;
+        }
+      }
     }
 
     &__overlay {
@@ -198,6 +282,12 @@
       position: absolute;
       left: 0;
       top: 0;
+      opacity: 0;
+      transition: 250ms ease-in-out;
+
+      &--active {
+        opacity: 1;
+      }
     }
   }
 </style>
